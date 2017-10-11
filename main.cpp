@@ -1,4 +1,6 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <cmath>
 using namespace std;
 std::ofstream ofile;
@@ -6,27 +8,41 @@ std::ofstream ofile;
 // Want to compute numerically the probability P of measuring the value i* in the state (UF)^n |s> as a function of different (integer) values of n.
 // Need to write the data to a file, and then plot in excel/somewhere else.
 
-int print_to_file();
+double probability(int stor_N, double alpha);
 
 int main()
 {
-	int store_N = pow(10, 3); // skal være 3, 4 eller 5
- 	// lille n skal gå fra 1 til 300 for hver av store N
+    int stor_N = pow(10,3);
+    ofile.open("Resultater3.txt");
 
+    ofile << "N = " << stor_N << endl << endl;
+    ofile << "n " << " prob        " << "alpha used  " << "beta used" << endl;
 
+    double alpha = 1.0, beta = 0.0;
+    double prob, temp_alpha, temp_beta;
 
-	return 0;
-}
+    for(int liten_n = 1; liten_n<301; liten_n++){
 
-int print_to_file(){
-	char* outfilename = "test";
-    ofile.open(outfilename);
+        // PROBABILITY
+        prob = probability(stor_N, alpha);
 
-    ofile << " n " << " probability " << endl;
+        ofile << fixed << setprecision(6) << liten_n << "  " << prob << "    " << alpha << "    " <<beta << endl;
 
-    for(int i=0; i<300; i++){
-    	ofile << (i+1) << "probability" << endl;
+        // CALCULATION
+        temp_alpha = (alpha*(1.0 - (4.0/stor_N)) - beta*(2.0/sqrt(stor_N)));
+        temp_beta = (alpha*(2.0/sqrt(stor_N)) + beta);
+
+        alpha = temp_alpha;
+        beta = temp_beta;
     }
 
-	ofile.close;
+    ofile.close();
+
+    return 0;
+}
+
+
+double probability(int stor_N, double alpha){
+
+    return (1.0 - alpha*alpha*(1.0-(1.0/stor_N)));
 }
